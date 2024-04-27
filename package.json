@@ -12,5 +12,8 @@
   "dependencies": {
     "@actions/core": "^1.2.6",
     "cos-nodejs-sdk-v5": "^2.5.14"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
   }
 }
