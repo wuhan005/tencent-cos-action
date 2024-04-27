@@ -1,6 +1,8 @@
-# cos-action
+> 官方的 GitHub Actions 年久失修，且质量极差，因此改一个自用。
 
-Github Action to upload to Tencent Cloud COS
+# tencent-cos-action
+
+Tencent Cloud COS GitHub Action.
 
 ## Inputs
 
@@ -39,13 +41,13 @@ Github Action to upload to Tencent Cloud COS
 ## Example usage
 
 ```
-uses: TencentCloud/cos-action@v1
+uses: wuhan005/tencent-cos-action@master
 with:
   secret_id: ${{ secrets.TENCENT_CLOUD_SECRET_ID }}
   secret_key: ${{ secrets.TENCENT_CLOUD_SECRET_KEY }}
   cos_bucket: ${{ secrets.COS_BUCKET }}
   cos_region: ${{ secrets.COS_REGION }}
   local_path: build
-  remote_path: docroot/static
   clean: true
+  accelerate: true
 ```
