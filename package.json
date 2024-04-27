@@ -1,5 +1,5 @@
 {
-  "name": "tencent-cos-action",
+  "name": "@wuhan005/tencent-cos-action",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
