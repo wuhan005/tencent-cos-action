@@ -25,6 +25,7 @@ jobs:
             @semantic-release/changelog
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Push updates to branch for major version
         # if there is a new version published, let's say v1.2.3
