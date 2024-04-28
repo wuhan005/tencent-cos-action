@@ -116,7 +116,9 @@ const collectRemoteFiles = async (cos) => {
   let nextMarker = null;
 
   do {
+    console.log("fetching files from COS");
     data = await listFilesOnCOS(cos, nextMarker);
+    console.log(data.Contents.length, "files collected");
     for (const e of data.Contents) {
       // ⚠️ If may lead to a bug if the bucket is encrypted.
       const hash = e.ETag;
