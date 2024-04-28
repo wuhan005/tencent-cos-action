@@ -116,7 +116,7 @@ const collectRemoteFiles = async (cos) => {
   let nextMarker = null;
 
   do {
-    console.log("fetching files from COS");
+    console.log(`fetching files from COS: ${nextMarker} ${data.IsTruncated}`);
     data = await listFilesOnCOS(cos, nextMarker);
     console.log(data.Contents.length, "files collected");
     for (const e of data.Contents) {
