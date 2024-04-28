@@ -2,6 +2,7 @@ const core = require("@actions/core");
 const COS = require("cos-nodejs-sdk-v5");
 const fs = require("fs");
 const Path = require("path");
+const md5File = require("md5-file");
 
 const walk = async (path, walkFn) => {
   stats = await fs.promises.lstat(path);
@@ -77,14 +78,18 @@ const listFilesOnCOS = (cos, nextMarker) => {
 
 const collectLocalFiles = async (cos) => {
   const root = cos.localPath;
-  const files = new Set();
+  const files = {};
+
   await walk(root, (path) => {
     let p = path.substring(root.length);
     for (; p[0] === "/"; ) {
       p = p.substring(1);
     }
-    files.add(p);
+
+    const hash = md5File.sync(path);
+    files[p] = hash;
   });
+
   return files;
 };
 
@@ -106,18 +111,22 @@ const uploadFiles = async (cos, localFiles) => {
 };
 
 const collectRemoteFiles = async (cos) => {
-  const files = new Set();
+  const files = {};
   let data = {};
   let nextMarker = null;
 
   do {
     data = await listFilesOnCOS(cos, nextMarker);
     for (const e of data.Contents) {
+      // ⚠️ If may lead to a bug if the bucket is encrypted.
+      const hash = e.ETag;
+
       let p = e.Key.substring(cos.remotePath.length);
       for (; p[0] === "/"; ) {
         p = p.substring(1);
       }
-      files.add(p);
+
+      files[p] = hash;
     }
     nextMarker = data.NextMarker;
   } while (data.IsTruncated === "true");
@@ -154,11 +163,19 @@ const cleanDeleteFiles = async (cos, deleteFiles) => {
 
 const process = async (cos) => {
   const localFiles = await collectLocalFiles(cos);
+  const remoteFiles = await collectRemoteFiles(cos);
+
+  // Diff the local and remote files, skip the existing and same md5 files.
+  for (const file of Object.keys(remoteFiles)) {
+    if (localFiles[file] === remoteFiles[file]) {
+      localFiles.delete(file);
+    }
+  }
+
   console.log(localFiles.size, "files to be uploaded");
   await uploadFiles(cos, localFiles);
   let cleanedFilesCount = 0;
   if (cos.clean) {
-    const remoteFiles = await collectRemoteFiles(cos);
     const deletedFiles = findDeletedFiles(localFiles, remoteFiles);
     if (deletedFiles.size > 0) {
       console.log(`${deletedFiles.size} files to be cleaned`);
