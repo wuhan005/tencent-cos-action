@@ -163,7 +163,12 @@ const cleanDeleteFiles = async (cos, deleteFiles) => {
 
 const process = async (cos) => {
   const localFiles = await collectLocalFiles(cos);
+  const localFileKeys = Object.keys(localFiles);
+  console.log(`>> ${Object.keys(localFiles).length} local files collected`);
+
   const remoteFiles = await collectRemoteFiles(cos);
+  const remoteFileKeys = Object.keys(remoteFiles);
+  console.log(`>> ${Object.keys(remoteFiles).length} remote files collected`);
 
   // Diff the local and remote files, skip the existing and same md5 files.
   for (const file of Object.keys(remoteFiles)) {
@@ -172,11 +177,11 @@ const process = async (cos) => {
     }
   }
 
-  console.log(localFiles.size, "files to be uploaded");
-  await uploadFiles(cos, localFiles);
+  console.log(localFileKeys.size, "files to be uploaded");
+  await uploadFiles(cos, localFileKeys);
   let cleanedFilesCount = 0;
   if (cos.clean) {
-    const deletedFiles = findDeletedFiles(localFiles, remoteFiles);
+    const deletedFiles = findDeletedFiles(localFileKeys, remoteFileKeys);
     if (deletedFiles.size > 0) {
       console.log(`${deletedFiles.size} files to be cleaned`);
     }
@@ -187,7 +192,7 @@ const process = async (cos) => {
   if (cleanedFilesCount > 0) {
     cleanedFilesMessage = `, cleaned ${cleanedFilesCount} files`;
   }
-  console.log(`uploaded ${localFiles.size} files${cleanedFilesMessage}`);
+  console.log(`uploaded ${localFileKeys.size} files${cleanedFilesMessage}`);
 };
 
 try {
