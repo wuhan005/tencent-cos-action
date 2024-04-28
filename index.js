@@ -199,11 +199,8 @@ try {
   let cosOptions = {
     SecretId: core.getInput("secret_id"),
     SecretKey: core.getInput("secret_key"),
+    UseAccelerate: core.getInput("accelerate") === "true",
   };
-  if (core.getInput("accelerate") === "true") {
-    cosOptions.Domain = "{Bucket}.cos.accelerate.myqcloud.com";
-    console.log(">> use accelerate endpoint");
-  }
 
   const cos = {
     cli: new COS(cosOptions),
