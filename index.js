@@ -170,6 +170,11 @@ const process = async (cos) => {
   const remoteFileKeys = new Set(Object.keys(remoteFiles));
   console.log(`>> ${Object.keys(remoteFiles).length} remote files collected`);
 
+  console.log(`remoteFiles`);
+  console.log(remoteFiles);
+  console.log(`localFiles`);
+  console.log(localFiles);
+
   // Diff the local and remote files, skip the existing and same md5 files.
   for (const file of Object.keys(remoteFiles)) {
     if (localFiles[file] === remoteFiles[file]) {
