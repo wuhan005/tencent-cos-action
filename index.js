@@ -116,9 +116,7 @@ const collectRemoteFiles = async (cos) => {
   let nextMarker = null;
 
   do {
-    console.log(`fetching files from COS: ${nextMarker} ${data.IsTruncated}`);
     data = await listFilesOnCOS(cos, nextMarker);
-    console.log(data.Contents.length, "files collected");
     for (const e of data.Contents) {
       // ⚠️ If may lead to a bug if the bucket is encrypted.
       const hash = e.ETag;
@@ -165,11 +163,11 @@ const cleanDeleteFiles = async (cos, deleteFiles) => {
 
 const process = async (cos) => {
   const localFiles = await collectLocalFiles(cos);
-  const localFileKeys = Object.keys(localFiles);
+  const localFileKeys = new Set(Object.keys(localFiles));
   console.log(`>> ${Object.keys(localFiles).length} local files collected`);
 
   const remoteFiles = await collectRemoteFiles(cos);
-  const remoteFileKeys = Object.keys(remoteFiles);
+  const remoteFileKeys = new Set(Object.keys(remoteFiles));
   console.log(`>> ${Object.keys(remoteFiles).length} remote files collected`);
 
   // Diff the local and remote files, skip the existing and same md5 files.
