@@ -131,7 +131,7 @@ const collectRemoteFiles = async (cos) => {
       files[p] = hash;
     }
     nextMarker = data.NextMarker;
-  } while (data.IsTruncated === "true");
+  } while (data.IsTruncated === true);
 
   return files;
 };
